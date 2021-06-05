@@ -49,6 +49,7 @@ function App() {
     return !from || isBeforeFirstDay || isRangeSelected;
   }
 
+  //////////////////////////////////////////////////////////////////////////////
   function handleDayClick(day) {
     const { from, to } = state.range;
     if (from < to) {
@@ -65,13 +66,19 @@ function App() {
       //day = new Date(day.setHours(0));
       //console.log(day);
       //return;
+      console.log("first day");
+      console.log(typeof day);
       setState((prevState) => ({
         ...prevState,
         range: {
-          ...prevState.range,
-          from: new Date(day.setHours(0))
+          from: new Date(day.setHours(0)),
+          to: null
         },
-        enteredTo: day
+        enteredTo: day,
+        select: {
+          ...prevState.select,
+          period: ""
+        }
       }));
     } else {
       //console.log("second click"); // second click
@@ -81,10 +88,15 @@ function App() {
           ...prevState.range,
           to: new Date(day.setHours(23, 59, 59))
         },
+        select: {
+          ...prevState.select,
+          period: ""
+        },
         enteredTo: day
       }));
     }
   }
+  ///////////////////////////////////////////////////////////////////////////////
 
   function handleDayMouseEnter(day) {
     const { from, to } = state.range;
@@ -117,8 +129,10 @@ function App() {
 
   function handleSelectPeriod(event) {
     let from, to;
+    let date = new Date();
 
     switch (event.target.value) {
+      ////////////////////////
       case "all-period":
         console.log("all period");
 
@@ -128,24 +142,39 @@ function App() {
           select: {
             ...prevState,
             period: event.target.value
-          }
+          },
+          enteredTo: null
         }));
         break;
-
+      ///////////////////////
       case "last-week":
         console.log("last-week");
-
-        //from =
+        setState((prevState) => ({
+          ...prevState,
+          range: {
+            from: new Date(date.setHours(0)),
+            to: new Date(date.setHours(23, 59, 59))
+          },
+          select: {
+            ...prevState,
+            period: event.target.value
+          },
+          enteredTo: null
+        }));
         break;
+      //////////////////////
       case "last-month":
         console.log("last-month");
         break;
+      //////////////////////
       case "last-half-year":
         console.log("last-half-year");
         break;
+      ///////////////////////
       case "last-year":
         console.log("last-year");
         break;
+      ///////////////////////
       default:
         console.log("error period");
     }
