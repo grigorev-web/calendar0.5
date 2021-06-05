@@ -37,7 +37,8 @@ function App() {
     return {
       range: { from: null, to: null },
       enteredTo: null,
-      events: { highlighted: [] }
+      events: [],
+      select: { type: "", period: "" }
     };
   }
   function isSelectingFirstDay(from, to, day) {
@@ -98,11 +99,65 @@ function App() {
   function handleResetClick() {
     setState((prevState) => ({
       ...prevState,
-      range: { from: null, to: null }
+      range: { from: null, to: null },
+      select: { type: "", period: "" }
     }));
     console.log(state);
   }
 
+  function handleSelectType(event) {
+    setState((prevState) => ({
+      ...prevState,
+      select: {
+        ...prevState.select,
+        type: event.target.value
+      }
+    }));
+  }
+
+  function handleSelectPeriod(event) {
+    let from, to;
+
+    switch (event.target.value) {
+      case "all-period":
+        console.log("all period");
+
+        setState((prevState) => ({
+          ...prevState,
+          range: { from: null, to: null },
+          select: {
+            ...prevState,
+            period: event.target.value
+          }
+        }));
+        break;
+
+      case "last-week":
+        console.log("last-week");
+
+        //from =
+        break;
+      case "last-month":
+        console.log("last-month");
+        break;
+      case "last-half-year":
+        console.log("last-half-year");
+        break;
+      case "last-year":
+        console.log("last-year");
+        break;
+      default:
+        console.log("error period");
+    }
+
+    setState((prevState) => ({
+      ...prevState,
+      select: {
+        ...prevState.select,
+        period: event.target.value
+      }
+    }));
+  }
   const { range, enteredTo } = state;
   //const modifiers = { start: range.from, end: enteredTo };
   const disabledDays = { before: state.range.from };
@@ -132,7 +187,7 @@ function App() {
     }
   });
   let listEvents = events.map((v, key) => <EventDiv key={key} event={v} />);
-
+  console.log(state);
   return (
     <div>
       <DayPicker
@@ -149,6 +204,20 @@ function App() {
         weekdaysShort={WEEKDAYS_SHORT}
       />
       <div>
+        <select value={state.select.type} onChange={handleSelectType}>
+          <option value="all-events">Все мероприятия</option>
+          <option value="russoft-events">Мероприятия РУССОФТ</option>
+          <option value="partners-events">Мероприятия партнеров</option>
+        </select>
+
+        <select value={state.select.period} onChange={handleSelectPeriod}>
+          <option value="all-period">Все мероприятия</option>
+          <option value="last-week">За неделю</option>
+          <option value="last-month">За месяц</option>
+          <option value="last-half-year">За полгода</option>
+          <option value="last-year">За год</option>
+        </select>
+
         {/* !range.from && !range.to && "Please select the first day." */}
         {/* range.from && !range.to && "Please select the last day." */}
         {/* range.from &&
@@ -157,7 +226,7 @@ function App() {
         ${range.to.toLocaleDateString()}` */}
         {range.from && range.to && (
           <button className="link" onClick={handleResetClick}>
-            Сбросить
+            Очистить фильтр
           </button>
         )}
       </div>
