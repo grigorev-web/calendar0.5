@@ -118,9 +118,23 @@ function App() {
     end: range.to,
     highlighted: highlighted
   };
+
+  let count = 0;
+  let events = [];
+  Object.entries(state.events).map(([k, obj], key) => {
+    let ev = new Date(obj.date);
+    if (
+      (ev > state.range.from && ev < state.range.to) ||
+      state.range.from == null
+    ) {
+      events.push(obj);
+      count++;
+    }
+  });
+  let listEvents = events.map((v, key) => <EventDiv key={key} event={v} />);
+
   return (
     <div>
-      <h3>Calendar 0.4</h3>
       <DayPicker
         className="Range"
         numberOfMonths={2}
@@ -135,18 +149,19 @@ function App() {
         weekdaysShort={WEEKDAYS_SHORT}
       />
       <div>
-        {!range.from && !range.to && "Please select the first day."}
-        {range.from && !range.to && "Please select the last day."}
-        {range.from &&
+        {/* !range.from && !range.to && "Please select the first day." */}
+        {/* range.from && !range.to && "Please select the last day." */}
+        {/* range.from &&
           range.to &&
           `Selected from ${range.from.toLocaleDateString()} to
-                ${range.to.toLocaleDateString()}`}{" "}
+        ${range.to.toLocaleDateString()}` */}
         {range.from && range.to && (
           <button className="link" onClick={handleResetClick}>
-            Reset
+            Сбросить
           </button>
         )}
       </div>
+      {/*
       <p>
         from: {state.range.from == null ? "null" : state.range.from.toString()}
       </p>
@@ -155,17 +170,9 @@ function App() {
         enteredTo:{" "}
         {state.enteredTo == null ? "null" : state.enteredTo.toString()}
       </p>
-      <p>Список мероприятий</p>
-      <ul>
-        {Object.entries(state.events).map(([k, v], key) => {
-          let ev = new Date(v.date);
-          if (
-            (ev > state.range.from && ev < state.range.to) ||
-            state.range.from == null
-          )
-            return <EventDiv key={key} event={v} />;
-        })}
-      </ul>
+      */}
+      <div className="counter">{count} мероприятий</div>
+      <div className="row row_flex">{listEvents}</div>
     </div>
   );
 }

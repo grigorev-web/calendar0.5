@@ -1,3 +1,5 @@
+import { BsClock } from "react-icons/bs";
+
 export default function EventDiv(props) {
   /*
   return(
@@ -42,7 +44,7 @@ export default function EventDiv(props) {
           {props.event.short_description}(" ")
         </div>
         <div className="post__date">
-          <div>Clock</div>
+          <BsClock />
           <span className="post__time">{props.event.date} </span>
         </div>
       </div>
