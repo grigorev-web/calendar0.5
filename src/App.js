@@ -19,7 +19,7 @@ function App() {
     )
       .then((response) => response.json())
       .then((data) => {
-        console.log("fetch data: ", data);
+        //console.log("fetch data: ", data);
 
         setState((prevState) => ({
           ...prevState,
@@ -66,8 +66,8 @@ function App() {
       //day = new Date(day.setHours(0));
       //console.log(day);
       //return;
-      console.log("first day");
-      console.log(typeof day);
+      // console.log("first day");
+      //console.log(typeof day);
       setState((prevState) => ({
         ...prevState,
         range: {
@@ -114,7 +114,7 @@ function App() {
       range: { from: null, to: null },
       select: { type: "", period: "" }
     }));
-    console.log(state);
+    //console.log(state);
   }
 
   function handleSelectType(event) {
@@ -131,7 +131,7 @@ function App() {
     switch (event.target.value) {
       ////////////////////////
       case "all-period":
-        console.log("all period");
+        //console.log("all period");
 
         setState((prevState) => ({
           ...prevState,
@@ -145,7 +145,7 @@ function App() {
         break;
       ///////////////////////
       case "last-week":
-        console.log("last-week");
+        // console.log("last-week");
         // let entered = new Date(new Date().setDate(new Date().getDate() + 7));
         //console.log("log:", entered);
         setState((prevState) => ({
@@ -163,7 +163,7 @@ function App() {
         break;
       //////////////////////
       case "last-month":
-        console.log("last-month");
+        //console.log("last-month");
         setState((prevState) => ({
           ...prevState,
           range: {
@@ -179,7 +179,7 @@ function App() {
         break;
       //////////////////////
       case "last-half-year":
-        console.log("last-half-year");
+        //console.log("last-half-year");
         setState((prevState) => ({
           ...prevState,
           range: {
@@ -195,7 +195,7 @@ function App() {
         break;
       ///////////////////////
       case "last-year":
-        console.log("last-year");
+        //console.log("last-year");
         setState((prevState) => ({
           ...prevState,
           range: {
@@ -211,7 +211,7 @@ function App() {
         break;
       ///////////////////////
       default:
-        console.log("error period");
+      //console.log("error period");
     }
   }
   const { range, enteredTo } = state;
@@ -224,14 +224,14 @@ function App() {
       state.select.type === "russoft-events" &&
       Array.isArray(v.category) &&
       v.category.length > 0 &&
-      v.category[0].slug === "russoft-events"
+      v.category[0].slug !== "russoft-events"
     )
       return null;
     if (
       state.select.type === "partners-events" &&
       Array.isArray(v.category) &&
       v.category.length > 0 &&
-      v.category[0].slug === "partners-events"
+      v.category[0].slug !== "partners-events"
     )
       return null;
     return new Date(v.date);
@@ -276,14 +276,23 @@ function App() {
         }
 
         return 1;
-        break;
+      case "partners-events":
+        if (
+          Array.isArray(cat) &&
+          cat.length > 0 &&
+          cat[0].slug !== "partners-events"
+        ) {
+          count--;
+          return false;
+        }
+        return 1;
       default:
         return 1;
     }
   });
-  console.log("events", events);
+  //console.log("events", events);
   let listEvents = events.map((v, key) => <EventDiv key={key} event={v} />);
-  console.log(state);
+  //console.log(state);
   return (
     <div>
       <DayPicker
@@ -299,32 +308,33 @@ function App() {
         months={MONTHS}
         weekdaysShort={WEEKDAYS_SHORT}
       />
-      <div>
-        <select value={state.select.type} onChange={handleSelectType}>
-          <option value="all-events">Все мероприятия</option>
-          <option value="russoft-events">Мероприятия РУССОФТ</option>
-          <option value="partners-events">Мероприятия партнеров</option>
-        </select>
+      <div className="DayPicker-filter">
+        <div className="DayPicker-filter__select">
+          <select value={state.select.type} onChange={handleSelectType}>
+            <option value="all-events">Все мероприятия</option>
+            <option value="russoft-events">Мероприятия РУССОФТ</option>
+            <option value="partners-events">Мероприятия партнеров</option>
+          </select>
 
-        <select value={state.select.period} onChange={handleSelectPeriod}>
-          <option value="all-period">Все мероприятия</option>
-          <option value="last-week">На неделю</option>
-          <option value="last-month">На месяц</option>
-          <option value="last-half-year">На полгода</option>
-          <option value="last-year">На год</option>
-        </select>
-
+          <select value={state.select.period} onChange={handleSelectPeriod}>
+            <option value="all-period">За все время</option>
+            <option value="last-week">На неделю</option>
+            <option value="last-month">На месяц</option>
+            <option value="last-half-year">На полгода</option>
+            <option value="last-year">На год</option>
+          </select>
+        </div>
         {/* !range.from && !range.to && "Please select the first day." */}
         {/* range.from && !range.to && "Please select the last day." */}
         {/* range.from &&
           range.to &&
           `Selected from ${range.from.toLocaleDateString()} to
         ${range.to.toLocaleDateString()}` */}
-        {range.from && range.to && (
+        <div className="DayPicker-filter__clear-button">
           <button className="link" onClick={handleResetClick}>
             Очистить фильтр
           </button>
-        )}
+        </div>
       </div>
       {/*
       <p>

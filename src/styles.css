@@ -9,7 +9,8 @@
 .DayPicker-Day--highlighted:not(.DayPicker-Day--outside) {
   color: black;
   font-weight: bold;
-  background: #ffe7c9 !important;
+  color: black !important;
+  background: #ffe7c9;
 
   border-radius: 26%;
 }
@@ -19,15 +20,24 @@
   color: #4a90e2;
 }
 
-.DayPicker-Day--start {
+.DayPicker-Day--start:not(.DayPicker-Day--outside) {
   background: #88bfff;
   border-radius: 25px 0 0 25px;
+  font-weight: bold;
 }
 
-.DayPicker-Day--end {
+.DayPicker-Day--end:not(.DayPicker-Day--outside) {
   background: #88bfff;
   border-radius: 0 25px 25px 0;
+  font-weight: bold;
 }
 .DayPicker-Day--weekends {
   color: #ff9494;
+}
+.DayPicker-Day
+  DayPicker-Day--weekends
+  DayPicker-Day--start
+  DayPicker-Day--selected
+  DayPicker-Day--today {
+  background: #cadef1;
 }
