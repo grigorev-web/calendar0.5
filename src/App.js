@@ -128,9 +128,6 @@ function App() {
   }
 
   function handleSelectPeriod(event) {
-    let from, to;
-    let date = new Date();
-
     switch (event.target.value) {
       ////////////////////////
       case "all-period":
@@ -149,43 +146,73 @@ function App() {
       ///////////////////////
       case "last-week":
         console.log("last-week");
+        // let entered = new Date(new Date().setDate(new Date().getDate() + 7));
+        //console.log("log:", entered);
         setState((prevState) => ({
           ...prevState,
           range: {
-            from: new Date(date.setHours(0)),
-            to: new Date(date.setHours(23, 59, 59))
+            from: new Date(new Date().setHours(0)),
+            to: new Date(new Date().setDate(new Date().getDate() + 7))
           },
           select: {
             ...prevState,
             period: event.target.value
           },
-          enteredTo: null
+          enteredTo: new Date(new Date().setDate(new Date().getDate() + 7))
         }));
         break;
       //////////////////////
       case "last-month":
         console.log("last-month");
+        setState((prevState) => ({
+          ...prevState,
+          range: {
+            from: new Date(new Date().setHours(0)),
+            to: new Date(new Date().setDate(new Date().getDate() + 31))
+          },
+          select: {
+            ...prevState,
+            period: event.target.value
+          },
+          enteredTo: new Date(new Date().setDate(new Date().getDate() + 31))
+        }));
         break;
       //////////////////////
       case "last-half-year":
         console.log("last-half-year");
+        setState((prevState) => ({
+          ...prevState,
+          range: {
+            from: new Date(new Date().setHours(0)),
+            to: new Date(new Date().setDate(new Date().getDate() + 180))
+          },
+          select: {
+            ...prevState,
+            period: event.target.value
+          },
+          enteredTo: new Date(new Date().setDate(new Date().getDate() + 180))
+        }));
         break;
       ///////////////////////
       case "last-year":
         console.log("last-year");
+        setState((prevState) => ({
+          ...prevState,
+          range: {
+            from: new Date(new Date().setHours(0)),
+            to: new Date(new Date().setDate(new Date().getDate() + 365))
+          },
+          select: {
+            ...prevState,
+            period: event.target.value
+          },
+          enteredTo: new Date(new Date().setDate(new Date().getDate() + 365))
+        }));
         break;
       ///////////////////////
       default:
         console.log("error period");
     }
-
-    setState((prevState) => ({
-      ...prevState,
-      select: {
-        ...prevState.select,
-        period: event.target.value
-      }
-    }));
   }
   const { range, enteredTo } = state;
   //const modifiers = { start: range.from, end: enteredTo };
@@ -193,6 +220,20 @@ function App() {
   const selectedDays = [range.from, { from: range.from, to: enteredTo }]; //o: enteredTo }];
 
   let highlighted = Object.entries(state.events).map(([k, v], key) => {
+    if (
+      state.select.type === "russoft-events" &&
+      Array.isArray(v.category) &&
+      v.category.length > 0 &&
+      v.category[0].slug === "russoft-events"
+    )
+      return null;
+    if (
+      state.select.type === "partners-events" &&
+      Array.isArray(v.category) &&
+      v.category.length > 0 &&
+      v.category[0].slug === "partners-events"
+    )
+      return null;
     return new Date(v.date);
   });
 
@@ -203,6 +244,7 @@ function App() {
     highlighted: highlighted
   };
 
+  // Обьекты в диапазоне дат
   let count = 0;
   let events = [];
   Object.entries(state.events).map(([k, obj], key) => {
@@ -215,6 +257,31 @@ function App() {
       count++;
     }
   });
+  // Фильтр наши - не наши мероприятия
+  events = events.filter((obj) => {
+    //console.log("filter", state.select.type);
+    let cat = obj.category;
+    switch (state.select.type) {
+      case "all-events":
+        return true;
+      case "russoft-events":
+        if (
+          Array.isArray(cat) &&
+          cat.length > 0 &&
+          cat[0].slug !== "russoft-events"
+        ) {
+          //console.log("Это не РУССОФТ!", cat[0].slug);
+          count--;
+          return false;
+        }
+
+        return 1;
+        break;
+      default:
+        return 1;
+    }
+  });
+  console.log("events", events);
   let listEvents = events.map((v, key) => <EventDiv key={key} event={v} />);
   console.log(state);
   return (
@@ -241,10 +308,10 @@ function App() {
 
         <select value={state.select.period} onChange={handleSelectPeriod}>
           <option value="all-period">Все мероприятия</option>
-          <option value="last-week">За неделю</option>
-          <option value="last-month">За месяц</option>
-          <option value="last-half-year">За полгода</option>
-          <option value="last-year">За год</option>
+          <option value="last-week">На неделю</option>
+          <option value="last-month">На месяц</option>
+          <option value="last-half-year">На полгода</option>
+          <option value="last-year">На год</option>
         </select>
 
         {/* !range.from && !range.to && "Please select the first day." */}
